@@ -7,10 +7,10 @@ use App\Http\Controllers\API\CarController;
 use App\Http\Controllers\API\RentalController;
 use App\Http\Controllers\API\PaymentController;
 
-
+Route::prefix('api')->group(function () {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
+});
 // Public car routes
 Route::get('/cars', [CarController::class, 'index']);
 Route::get('/cars/{id}', [CarController::class, 'show']);

@@ -11,7 +11,8 @@ class CarController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/cars",
+     *     path="/cars",
+     *     operationId="getCars",
      *     summary="Get all cars",
      *     tags={"Cars"},
      *     @OA\Parameter(
@@ -67,7 +68,8 @@ class CarController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/cars",
+     *     path="/cars",
+     *     operationId="storeCar",
      *     summary="Create a new car",
      *     tags={"Cars"},
      *     security={{"bearerAuth":{}}},
@@ -131,25 +133,26 @@ class CarController extends Controller
     }
 
     /**
-     * @OAGet(
-     *     path="/api/cars/{id}",
+     * @OA\Get(
+     *     path="/cars/{id}",
+     *     operationId="getCarById",
      *     summary="Get a specific car",
      *     tags={"Cars"},
-     *     @OAParameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Car ID",
      *         required=true,
-     *         @OASchema(type="integer")
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @OAResponse(
+     *     @OA\Response(
      *         response=200,
      *         description="Car details",
-     *         @OAJsonContent(
-     *             @OAProperty(property="car", type="object")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="car", type="object")
      *         )
      *     ),
-     *     @OAResponse(
+     *     @OA\Response(
      *         response=404,
      *         description="Car not found"
      *     )
@@ -165,48 +168,49 @@ class CarController extends Controller
     }
 
     /**
-     * @OAPut(
-     *     path="/api/cars/{id}",
+     * @OA\Put(
+     *     path="/cars/{id}",
+     *     operationId="updateCar",
      *     summary="Update a car",
      *     tags={"Cars"},
      *     security={{"bearerAuth":{}}},
-     *     @OAParameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Car ID",
      *         required=true,
-     *         @OASchema(type="integer")
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @OARequestBody(
+     *     @OA\RequestBody(
      *         required=true,
-     *         @OAJsonContent(
-     *             @OAProperty(property="brand", type="string", example="Toyota"),
-     *             @OAProperty(property="model", type="string", example="Corolla"),
-     *             @OAProperty(property="license_plate", type="string", example="ABC123"),
-     *             @OAProperty(property="year", type="integer", example=2022),
-     *             @OAProperty(property="color", type="string", example="White"),
-     *             @OAProperty(property="transmission", type="string", enum={"manual", "automatic"}, example="automatic"),
-     *             @OAProperty(property="fuel_type", type="string", enum={"gasoline", "diesel", "electric", "hybrid"}, example="gasoline"),
-     *             @OAProperty(property="seats", type="integer", example=5),
-     *             @OAProperty(property="daily_rate", type="number", format="float", example=50.00),
-     *             @OAProperty(property="is_available", type="boolean", example=true),
-     *             @OAProperty(property="description", type="string", example="Comfortable sedan for daily use"),
-     *             @OAProperty(property="image", type="string", example="https://example.com/car.jpg"),
+     *         @OA\JsonContent(
+     *             @OA\Property(property="brand", type="string", example="Toyota"),
+     *             @OA\Property(property="model", type="string", example="Corolla"),
+     *             @OA\Property(property="license_plate", type="string", example="ABC123"),
+     *             @OA\Property(property="year", type="integer", example=2022),
+     *             @OA\Property(property="color", type="string", example="White"),
+     *             @OA\Property(property="transmission", type="string", enum={"manual", "automatic"}, example="automatic"),
+     *             @OA\Property(property="fuel_type", type="string", enum={"gasoline", "diesel", "electric", "hybrid"}, example="gasoline"),
+     *             @OA\Property(property="seats", type="integer", example=5),
+     *             @OA\Property(property="daily_rate", type="number", format="float", example=50.00),
+     *             @OA\Property(property="is_available", type="boolean", example=true),
+     *             @OA\Property(property="description", type="string", example="Comfortable sedan for daily use"),
+     *             @OA\Property(property="image", type="string", example="https://example.com/car.jpg"),
      *         )
      *     ),
-     *     @OAResponse(
+     *     @OA\Response(
      *         response=200,
      *         description="Car updated successfully",
-     *         @OAJsonContent(
-     *             @OAProperty(property="car", type="object"),
-     *             @OAProperty(property="message", type="string", example="Car updated successfully")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="car", type="object"),
+     *             @OA\Property(property="message", type="string", example="Car updated successfully")
      *         )
      *     ),
-     *     @OAResponse(
+     *     @OA\Response(
      *         response=404,
      *         description="Car not found"
      *     ),
-     *     @OAResponse(
+     *     @OA\Response(
      *         response=422,
      *         description="Validation error"
      *     )
@@ -244,26 +248,27 @@ class CarController extends Controller
     }
 
     /**
-     * @OADelete(
-     *     path="/api/cars/{id}",
+     * @OA\Delete(
+     *     path="/cars/{id}",
+     *     operationId="deleteCar",
      *     summary="Delete a car",
      *     tags={"Cars"},
      *     security={{"bearerAuth":{}}},
-     *     @OAParameter(
+     *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Car ID",
      *         required=true,
-     *         @OASchema(type="integer")
+     *         @OA\Schema(type="integer")
      *     ),
-     *     @OAResponse(
+     *     @OA\Response(
      *         response=200,
      *         description="Car deleted successfully",
-     *         @OAJsonContent(
-     *             @OAProperty(property="message", type="string", example="Car deleted successfully")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Car deleted successfully")
      *         )
      *     ),
-     *     @OAResponse(
+     *     @OA\Response(
      *         response=404,
      *         description="Car not found"
      *     )
