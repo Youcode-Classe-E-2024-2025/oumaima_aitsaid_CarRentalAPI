@@ -20,13 +20,13 @@
         }
     ],
     "paths": {
-        "/api/register": {
+        "/register": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Register a new user",
-                "operationId": "a718f172ff3ac464d723835815f8fb57",
+                "operationId": "e66f8a7452e13b03ae4e77dbb42e435c",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -35,8 +35,7 @@
                                 "required": [
                                     "name",
                                     "email",
-                                    "password",
-                                    "password_confirmation"
+                                    "password"
                                 ],
                                 "properties": {
                                     "name": {
@@ -49,11 +48,6 @@
                                         "example": "john@example.com"
                                     },
                                     "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "password123"
-                                    },
-                                    "password_confirmation": {
                                         "type": "string",
                                         "format": "password",
                                         "example": "password123"
@@ -82,20 +76,17 @@
                                 }
                             }
                         }
-                    },
-                    "422": {
-                        "description": "Validation error"
                     }
                 }
             }
         },
-        "/api/login": {
+        "/login": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Login a user",
-                "operationId": "44212a9096e4b09358281e9ec8a0701d",
+                "operationId": "d618a255475240ba3d40cc39692cd924",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -147,13 +138,13 @@
                 }
             }
         },
-        "/api/logout": {
+        "/logout": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Logout a user",
-                "operationId": "79854151e609bd20032aa5aa4d5a35c0",
+                "operationId": "1e357eb2c93a1bdabebcebfa088332bf",
                 "responses": {
                     "200": {
                         "description": "Logout successful",
@@ -179,13 +170,13 @@
                 ]
             }
         },
-        "/api/user": {
+        "/user": {
             "get": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Get authenticated user",
-                "operationId": "b5e90fe100cd00fd4957f924d70b7db8",
+                "operationId": "8f60355fe45caf090eec729e26434da4",
                 "responses": {
                     "200": {
                         "description": "User retrieved successfully",
@@ -312,10 +303,6 @@
                                         "type": "integer",
                                         "example": 2022
                                     },
-                                    "color": {
-                                        "type": "string",
-                                        "example": "White"
-                                    },
                                     "transmission": {
                                         "type": "string",
                                         "enum": [
@@ -432,12 +419,11 @@
                     "Cars"
                 ],
                 "summary": "Update a car",
-                "operationId": "updateCar",
+                "operationId": "531ad7a5d36382ed878ec85c7a56bd5f",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Car ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -449,65 +435,20 @@
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "brand",
+                                    "model",
+                                    "license_plate"
+                                ],
                                 "properties": {
                                     "brand": {
-                                        "type": "string",
-                                        "example": "Toyota"
+                                        "type": "string"
                                     },
                                     "model": {
-                                        "type": "string",
-                                        "example": "Corolla"
+                                        "type": "string"
                                     },
                                     "license_plate": {
-                                        "type": "string",
-                                        "example": "ABC123"
-                                    },
-                                    "year": {
-                                        "type": "integer",
-                                        "example": 2022
-                                    },
-                                    "color": {
-                                        "type": "string",
-                                        "example": "White"
-                                    },
-                                    "transmission": {
-                                        "type": "string",
-                                        "enum": [
-                                            "manual",
-                                            "automatic"
-                                        ],
-                                        "example": "automatic"
-                                    },
-                                    "fuel_type": {
-                                        "type": "string",
-                                        "enum": [
-                                            "gasoline",
-                                            "diesel",
-                                            "electric",
-                                            "hybrid"
-                                        ],
-                                        "example": "gasoline"
-                                    },
-                                    "seats": {
-                                        "type": "integer",
-                                        "example": 5
-                                    },
-                                    "daily_rate": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": 50
-                                    },
-                                    "is_available": {
-                                        "type": "boolean",
-                                        "example": true
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "example": "Comfortable sedan for daily use"
-                                    },
-                                    "image": {
-                                        "type": "string",
-                                        "example": "https://example.com/car.jpg"
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -517,23 +458,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Car updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "car": {
-                                            "type": "object"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Car updated successfully"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Car updated successfully"
                     },
                     "404": {
                         "description": "Car not found"
@@ -593,13 +518,13 @@
                 ]
             }
         },
-        "/api/rentals": {
+        "/rentals": {
             "get": {
                 "tags": [
                     "Rentals"
                 ],
                 "summary": "Get all rentals",
-                "operationId": "d13fcfe718a0671835de4db25a529dff",
+                "operationId": "877423670252f62e9b091c0644448334",
                 "parameters": [
                     {
                         "name": "page",
@@ -663,7 +588,7 @@
                     "Rentals"
                 ],
                 "summary": "Create a new rental",
-                "operationId": "6fc81685c760b26ee1d42d0ccb869b65",
+                "operationId": "1ff4a5ce8ef13746ae0370c260464399",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -730,13 +655,13 @@
                 ]
             }
         },
-        "/api/rentals/{id}": {
+        "/rentals/{id}": {
             "get": {
                 "tags": [
                     "Rentals"
                 ],
                 "summary": "Get a specific rental",
-                "operationId": "a3fb6db302d7db71105219f3b1f1dcdc",
+                "operationId": "aa593833ce61b8616fd5dc8341af1413",
                 "parameters": [
                     {
                         "name": "id",
@@ -773,7 +698,9 @@
                         "bearerAuth": []
                     }
                 ]
-            },
+            }
+        },
+        "/api/rentals/{id}": {
             "put": {
                 "tags": [
                     "Rentals"

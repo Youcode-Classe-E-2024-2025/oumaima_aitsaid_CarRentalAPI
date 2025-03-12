@@ -81,7 +81,6 @@ class CarController extends Controller
      *             @OA\Property(property="model", type="string", example="Corolla"),
      *             @OA\Property(property="license_plate", type="string", example="ABC123"),
      *             @OA\Property(property="year", type="integer", example=2022),
-     *             @OA\Property(property="color", type="string", example="White"),
      *             @OA\Property(property="transmission", type="string", enum={"manual", "automatic"}, example="automatic"),
      *             @OA\Property(property="fuel_type", type="string", enum={"gasoline", "diesel", "electric", "hybrid"}, example="gasoline"),
      *             @OA\Property(property="seats", type="integer", example=5),
@@ -111,7 +110,6 @@ class CarController extends Controller
             'model' => 'required|string|max:255',
             'license_plate' => 'required|string|max:255|unique:cars',
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'color' => 'required|string|max:255',
             'transmission' => 'required|in:manual,automatic',
             'fuel_type' => 'required|in:gasoline,diesel,electric,hybrid',
             'seats' => 'required|integer|min:1|max:10',
@@ -167,55 +165,32 @@ class CarController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/cars/{id}",
-     *     operationId="updateCar",
-     *     summary="Update a car",
-     *     tags={"Cars"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Car ID",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="brand", type="string", example="Toyota"),
-     *             @OA\Property(property="model", type="string", example="Corolla"),
-     *             @OA\Property(property="license_plate", type="string", example="ABC123"),
-     *             @OA\Property(property="year", type="integer", example=2022),
-     *             @OA\Property(property="color", type="string", example="White"),
-     *             @OA\Property(property="transmission", type="string", enum={"manual", "automatic"}, example="automatic"),
-     *             @OA\Property(property="fuel_type", type="string", enum={"gasoline", "diesel", "electric", "hybrid"}, example="gasoline"),
-     *             @OA\Property(property="seats", type="integer", example=5),
-     *             @OA\Property(property="daily_rate", type="number", format="float", example=50.00),
-     *             @OA\Property(property="is_available", type="boolean", example=true),
-     *             @OA\Property(property="description", type="string", example="Comfortable sedan for daily use"),
-     *             @OA\Property(property="image", type="string", example="https://example.com/car.jpg"),
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Car updated successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="car", type="object"),
-     *             @OA\Property(property="message", type="string", example="Car updated successfully")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Car not found"
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error"
-     *     )
-     * )
-     */
+/**
+ * @OA\Put(
+ *     path="/cars/{id}",
+ *     tags={"Cars"},
+ *     summary="Update a car",
+ *     security={{ "bearerAuth":{} }},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"brand","model","license_plate"},
+ *             @OA\Property(property="brand", type="string"),
+ *             @OA\Property(property="model", type="string"),
+ *             @OA\Property(property="license_plate", type="string")
+ *         )
+ *     ),
+ *     @OA\Response(response="200", description="Car updated successfully"),
+ *     @OA\Response(response="404", description="Car not found"),
+ *     @OA\Response(response="422", description="Validation error")
+ * )
+ */
     public function update(Request $request, $id)
     {
         $car = Car::findOrFail($id);
@@ -236,7 +211,7 @@ class CarController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()]);
         }
 
         $car->update($request->all());

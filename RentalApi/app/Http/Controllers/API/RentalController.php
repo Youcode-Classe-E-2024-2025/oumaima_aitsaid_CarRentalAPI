@@ -11,7 +11,7 @@ class RentalController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/api/rentals",
+     *     path="/rentals",
      *     summary="Get all rentals",
      *     tags={"Rentals"},
      *     security={{"bearerAuth":{}}},
@@ -42,27 +42,24 @@ class RentalController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Rental::with(['car', 'user', 'payment']);
-        
-        // Apply filters
+        $query = Rental::with(['user', 'car']);
+    
+        // Apply status filter if provided
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
-        
-        // If not admin, only show user's rentals
-        if (!$request->user()->hasRole('admin')) {
+    
+        // Get authenticated user's rentals
+        if ($request->user()) {
             $query->where('user_id', $request->user()->id);
         }
-        
-        // Paginate results
-        $rentals = $query->paginate(10);
-        
-        return response()->json($rentals);
+    
+        return $query->paginate();
     }
 
     /**
      * @OA\Post(
-     *     path="/api/rentals",
+     *     path="/rentals",
      *     summary="Create a new rental",
      *     tags={"Rentals"},
      *     security={{"bearerAuth":{}}},
@@ -139,7 +136,7 @@ class RentalController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/rentals/{id}",
+     *     path="/rentals/{id}",
      *     summary="Get a specific rental",
      *     tags={"Rentals"},
      *     security={{"bearerAuth":{}}},

@@ -7,26 +7,26 @@ use App\Http\Controllers\API\CarController;
 use App\Http\Controllers\API\RentalController;
 use App\Http\Controllers\API\PaymentController;
 
-Route::prefix('api')->group(function () {
+// Public Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-});
-// Public car routes
+
+// Public Car Routes
 Route::get('/cars', [CarController::class, 'index']);
+Route::get('/rentals', [RentalController::class, 'index']);
 Route::get('/cars/{id}', [CarController::class, 'show']);
 
-// Protected routes
+// Admin Car Management Routes
+Route::middleware(['api'])->group(function () {
+    Route::delete('/cars/{id}', [CarController::class, 'destroy']);
+    Route::post('/cars', [CarController::class, 'store']);
+    Route::put('/cars/{id}', [CarController::class, 'update']);
+});
+
+// Protected Routes (Authenticated Users)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
-    // Car routes (admin only)
-    Route::post('/cars', [CarController::class, 'store']);
-    Route::put('/cars/{id}', [CarController::class, 'update']);
-    Route::delete('/cars/{id}', [CarController::class, 'destroy']);
     
-    // Rental routes
-    Route::apiResource('rentals', RentalController::class);
-    
-    // Payment routes
-    Route::apiResource('payments', PaymentController::class);
+    // Resource Routes
 });
