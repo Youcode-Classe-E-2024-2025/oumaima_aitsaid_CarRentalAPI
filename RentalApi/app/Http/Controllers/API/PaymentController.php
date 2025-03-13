@@ -60,4 +60,58 @@ public function __constract(){
             'clientSecret' => $paymentIntent->client_secret
         ]);
     }
+     /**
+     * @OA\Post(
+     *     path="/payments/confirm",
+     *     summary="Confirm Stripe payment",
+     *     tags={"Payments"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"payment_intent_id","rental_id"},
+     *             @OA\Property(property="payment_intent_id", type="string"),
+     *             @OA\Property(property="rental_id", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment confirmed"
+     *     )
+     * )
+     */
+    public function confirmPayment(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'payment_intent_id' => 'required|string',
+            'rental_id' => 'required|exists:rentals,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
+        
+        // Create payment record
+        $payment = Payment::create([
+            'rental_id' => $request->rental_id,
+            'amount' => $paymentIntent->amount / 100,
+            'payment_method' => 'credit_card',
+            'transaction_id' => $paymentIntent->id,
+            'status' => $paymentIntent->status === 'succeeded' ? 'completed' : 'failed'
+        ]);
+
+        // Update rental status if payment successful
+        if ($payment->status === 'completed') {
+            $rental = Rental::find($request->rental_id);
+            $rental->update(['status' => 'active']);
+        }
+
+        return response()->json([
+            'payment' => $payment,
+            'message' => 'Payment processed successfully'
+        ]);
+    }
+
 }
