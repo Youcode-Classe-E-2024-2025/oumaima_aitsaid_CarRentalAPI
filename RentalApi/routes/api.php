@@ -27,6 +27,8 @@ Route::middleware(['api'])->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
-    
+    Route::post('/rentals', [RentalController::class, 'store']);
+    Route::put('/rentals/{id}', [RentalController::class, 'update']);
+    Route::delete('/rentals/{id}', [RentalController::class, 'destroy']);
     // Resource Routes
 });

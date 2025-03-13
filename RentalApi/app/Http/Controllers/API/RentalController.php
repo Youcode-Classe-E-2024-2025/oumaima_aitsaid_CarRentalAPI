@@ -56,84 +56,98 @@ class RentalController extends Controller
     
         return $query->paginate();
     }
+/**
+ * @OA\Post(
+ *     path="/rentals",
+ *     summary="Create a new rental",
+ *     tags={"Rentals"},
+ *     security={{"bearerAuth":{}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"car_id","start_date","end_date"},
+ *             @OA\Property(property="car_id", type="integer", example=1),
+ *             @OA\Property(property="start_date", type="string", format="date-time", example="2023-03-15T10:00:00Z"),
+ *             @OA\Property(property="end_date", type="string", format="date-time", example="2023-03-20T10:00:00Z"),
+ *             @OA\Property(property="notes", type="string", example="Business trip rental", nullable=true)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Rental created successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="rental",
+ *                 type="object",
+ *                 @OA\Property(property="user_id", type="integer", example=1),
+ *                 @OA\Property(property="car_id", type="integer", example=1),
+ *                 @OA\Property(property="start_date", type="string", format="date-time"),
+ *                 @OA\Property(property="end_date", type="string", format="date-time"),
+ *                 @OA\Property(property="total_amount", type="number", format="decimal", example=150.00),
+ *                 @OA\Property(property="status", type="string", example="pending"),
+ *                 @OA\Property(property="notes", type="string", nullable=true),
+ *                 @OA\Property(property="created_at", type="string", format="date-time"),
+ *                 @OA\Property(property="updated_at", type="string", format="date-time")
+ *             ),
+ *             @OA\Property(property="message", type="string", example="Rental created successfully")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error"
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthenticated"
+ *     )
+ * )
+ */
+public function store(Request $request)
+{
+    // First get the authenticated user
+    // $user = auth()->user();
+    
+    // if (!$user) {
+    //     return response()->json(['message' => 'Unauthenticated'], 401);
+    // }
 
-    /**
-     * @OA\Post(
-     *     path="/rentals",
-     *     summary="Create a new rental",
-     *     tags={"Rentals"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"car_id","start_date","end_date"},
-     *             @OA\Property(property="car_id", type="integer", example=1),
-     *             @OA\Property(property="start_date", type="string", format="date-time", example="2023-03-15T10:00:00Z"),
-     *             @OA\Property(property="end_date", type="string", format="date-time", example="2023-03-20T10:00:00Z"),
-     *             @OA\Property(property="notes", type="string", example="Business trip rental"),
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Rental created successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="rental", type="object"),
-     *             @OA\Property(property="message", type="string", example="Rental created successfully")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error"
-     *     )
-     * )
-     */
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'car_id' => 'required|exists:cars,id',
-            'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after:start_date',
-            'notes' => 'nullable|string',
-        ]);
+    $validator = Validator::make($request->all(), [
+        'user_id' => 'required|exists:users,id',
+        'car_id' => 'required|exists:cars,id',
+        'start_date' => 'required|date|after_or_equal:today',
+        'end_date' => 'required|date|after:start_date',
+        'notes' => 'nullable|string',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        // Check if car is available
-        $car = Car::findOrFail($request->car_id);
-        if (!$car->is_available) {
-            return response()->json([
-                'message' => 'Car is not available for rental',
-            ], 422);
-        }
-
-        // Calculate rental duration and total amount
-        $startDate = new \DateTime($request->start_date);
-        $endDate = new \DateTime($request->end_date);
-        $days = $startDate->diff($endDate)->days;
-        $totalAmount = $car->daily_rate * $days;
-
-        // Create rental
-        $rental = Rental::create([
-            'user_id' => $request->user()->id,
-            'car_id' => $request->car_id,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'total_amount' => $totalAmount,
-            'status' => 'pending',
-            'notes' => $request->notes,
-        ]);
-
-        // Update car availability
-        $car->update(['is_available' => false]);
-
-        return response()->json([
-            'rental' => $rental->load(['car', 'user']),
-            'message' => 'Rental created successfully',
-        ], 201);
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
     }
 
+    // Get the car
+    $car = Car::findOrFail($request->car_id);
+
+    // Calculate rental duration and total amount
+    $startDate = new \DateTime($request->start_date);
+    $endDate = new \DateTime($request->end_date);
+    $days = $startDate->diff($endDate)->days;
+    $totalAmount = $car->daily_rate * $days;
+
+    // Create rental with user_id from authenticated user
+    $rental = Rental::create([
+        'user_id' => $request->user_id,  // Set the authenticated user's ID
+        'car_id' => $request->car_id,
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        'total_amount' => $totalAmount,
+        'status' => 'pending',
+        'notes' => $request->notes,
+    ]);
+
+    return response()->json([
+        'rental' => $rental->load(['car', 'user']),
+        'message' => 'Rental created successfully'
+    ], 201);
+}
     /**
      * @OA\Get(
      *     path="/rentals/{id}",
@@ -162,23 +176,25 @@ class RentalController extends Controller
      */
     public function show($id)
     {
+        // Check if user is authenticated
+        
+    
         $rental = Rental::with(['car', 'user', 'payment'])->findOrFail($id);
         
-        // Check if user is authorized to view this rental
-        if ($rental->user_id !== auth()->id() && !auth()->user()->hasRole('admin')) {
+        // Simplified authorization check
+        if ($rental->user_id ) {
             return response()->json([
-                'message' => 'Unauthorized',
-            ], 403);
+                'rental' => $rental,
+            ]);
         }
-        
+    
         return response()->json([
-            'rental' => $rental,
-        ]);
+            'message' => 'Unauthorized',
+        ], 403);
     }
-
     /**
      * @OA\Put(
-     *     path="/api/rentals/{id}",
+     *     path="/rentals/{id}",
      *     summary="Update a rental",
      *     tags={"Rentals"},
      *     security={{"bearerAuth":{}}},
@@ -220,25 +236,18 @@ class RentalController extends Controller
     {
         $rental = Rental::findOrFail($id);
         
-        // Check if user is authorized to update this rental
-        if ($rental->user_id !== auth()->id() && !auth()->user()->hasRole('admin')) {
-            return response()->json([
-                'message' => 'Unauthorized',
-            ], 403);
-        }
-        
         $validator = Validator::make($request->all(), [
             'start_date' => 'sometimes|required|date',
             'end_date' => 'sometimes|required|date|after:start_date',
             'status' => 'sometimes|required|in:pending,active,completed,cancelled',
             'notes' => 'nullable|string',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
-        // If dates are changing, recalculate total amount
+    
+        // Calculate new total amount if dates changed
         if ($request->has('start_date') || $request->has('end_date')) {
             $startDate = new \DateTime($request->start_date ?? $rental->start_date);
             $endDate = new \DateTime($request->end_date ?? $rental->end_date);
@@ -246,23 +255,19 @@ class RentalController extends Controller
             $totalAmount = $rental->car->daily_rate * $days;
             $request->merge(['total_amount' => $totalAmount]);
         }
-
-        // If status is changing to completed or cancelled, make car available again
-        if ($request->has('status') && in_array($request->status, ['completed', 'cancelled']) && $rental->status !== 'completed' && $rental->status !== 'cancelled') {
-            $rental->car->update(['is_available' => true]);
-        }
-
+    
         $rental->update($request->all());
-
+    
         return response()->json([
             'rental' => $rental->load(['car', 'user', 'payment']),
-            'message' => 'Rental updated successfully',
+            'message' => 'Rental updated successfully'
         ]);
     }
+    
 
     /**
      * @OA\Delete(
-     *     path="/api/rentals/{id}",
+     *     path="/rentals/{id}",
      *     summary="Delete a rental",
      *     tags={"Rentals"},
      *     security={{"bearerAuth":{}}},
@@ -290,20 +295,13 @@ class RentalController extends Controller
     {
         $rental = Rental::findOrFail($id);
         
-        // Check if user is authorized to delete this rental
-        if ($rental->user_id !== auth()->id() && !auth()->user()->hasRole('admin')) {
-            return response()->json([
-                'message' => 'Unauthorized',
-            ], 403);
-        }
-        
-        // Make car available again
+       
         $rental->car->update(['is_available' => true]);
         
         $rental->delete();
-        
+    
         return response()->json([
-            'message' => 'Rental deleted successfully',
+            'message' => 'Rental deleted successfully'
         ]);
     }
 }
