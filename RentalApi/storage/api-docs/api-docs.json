@@ -518,6 +518,199 @@
                 ]
             }
         },
+        "/payments": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "List all payments",
+                "operationId": "e07c35407a995e6fbcc6159beb123d01",
+                "responses": {
+                    "200": {
+                        "description": "List of payments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Create a new payment",
+                "operationId": "0c3902cc46fc236adc6a3ecc698c0107",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "rental_id",
+                                    "amount",
+                                    "payment_method"
+                                ],
+                                "properties": {
+                                    "rental_id": {
+                                        "type": "integer"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "decimal"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "enum": [
+                                            "credit_card",
+                                            "debit_card",
+                                            "paypal",
+                                            "cash"
+                                        ]
+                                    },
+                                    "transaction_id": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Payment created successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/payments/{id}": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Get payment details",
+                "operationId": "cdbf6031f2c22d03b11b79ee72d8a105",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment details"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Update payment status",
+                "operationId": "42c3098b93370d26e1b4c39871b73a5c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "completed",
+                                            "failed",
+                                            "refunded"
+                                        ]
+                                    },
+                                    "transaction_id": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment updated successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Delete a payment",
+                "operationId": "cffc35edfbe3085457111971a77f2454",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment deleted successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/rentals": {
             "get": {
                 "tags": [
@@ -936,6 +1129,10 @@
         {
             "name": "Rentals",
             "description": "API Endpoints for rental management"
+        },
+        {
+            "name": "Payments",
+            "description": "API Endpoints for payment processing"
         }
     ]
 }

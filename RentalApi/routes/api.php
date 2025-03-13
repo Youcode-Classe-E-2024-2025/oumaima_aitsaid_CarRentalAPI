@@ -30,5 +30,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/rentals', [RentalController::class, 'store']);
     Route::put('/rentals/{id}', [RentalController::class, 'update']);
     Route::delete('/rentals/{id}', [RentalController::class, 'destroy']);
+    Route::apiResource('payments', PaymentController::class);
     // Resource Routes
 });
