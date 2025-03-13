@@ -518,25 +518,57 @@
                 ]
             }
         },
-        "/payments": {
-            "get": {
+        "/payments/create-intent": {
+            "post": {
                 "tags": [
                     "Payments"
                 ],
-                "summary": "List all payments",
-                "operationId": "e07c35407a995e6fbcc6159beb123d01",
+                "summary": "Create a new payment intent",
+                "operationId": "aa3300cd956f466845a8b7d37dc47735",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "rental_id",
+                                    "amount",
+                                    "payment_method"
+                                ],
+                                "properties": {
+                                    "rental_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 275
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "enum": [
+                                            "credit_card",
+                                            "debit_card",
+                                            "paypal",
+                                            "cash"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "List of payments",
+                        "description": "Payment intent created successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
+                                        "clientSecret": {
+                                            "type": "string"
                                         }
                                     },
                                     "type": "object"
@@ -550,30 +582,33 @@
                         "bearerAuth": []
                     }
                 ]
-            },
+            }
+        },
+        "/payments/confirm": {
             "post": {
                 "tags": [
                     "Payments"
                 ],
-                "summary": "Create a new payment",
-                "operationId": "0c3902cc46fc236adc6a3ecc698c0107",
+                "summary": "Confirm payment after intent",
+                "operationId": "7603e2804f11ebbafb9fa9d3b6fa594d",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
+                                    "payment_intent_id",
                                     "rental_id",
-                                    "amount",
                                     "payment_method"
                                 ],
                                 "properties": {
-                                    "rental_id": {
-                                        "type": "integer"
+                                    "payment_intent_id": {
+                                        "type": "string",
+                                        "example": "pi_3OqXyZKuReXqKZZp1gYQHhN5"
                                     },
-                                    "amount": {
-                                        "type": "number",
-                                        "format": "decimal"
+                                    "rental_id": {
+                                        "type": "integer",
+                                        "example": 1
                                     },
                                     "payment_method": {
                                         "type": "string",
@@ -583,88 +618,6 @@
                                             "paypal",
                                             "cash"
                                         ]
-                                    },
-                                    "transaction_id": {
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Payment created successfully"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/payments/{id}": {
-            "get": {
-                "tags": [
-                    "Payments"
-                ],
-                "summary": "Get payment details",
-                "operationId": "cdbf6031f2c22d03b11b79ee72d8a105",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Payment details"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "put": {
-                "tags": [
-                    "Payments"
-                ],
-                "summary": "Update payment status",
-                "operationId": "42c3098b93370d26e1b4c39871b73a5c",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "status": {
-                                        "type": "string",
-                                        "enum": [
-                                            "pending",
-                                            "completed",
-                                            "failed",
-                                            "refunded"
-                                        ]
-                                    },
-                                    "transaction_id": {
-                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -674,34 +627,22 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Payment updated successfully"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Payments"
-                ],
-                "summary": "Delete a payment",
-                "operationId": "cffc35edfbe3085457111971a77f2454",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
+                        "description": "Payment confirmed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "payment": {
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Payment deleted successfully"
                     }
                 },
                 "security": [
@@ -1119,6 +1060,10 @@
     },
     "tags": [
         {
+            "name": "Payments",
+            "description": "API Endpoints for payment processing"
+        },
+        {
             "name": "Authentication",
             "description": "API Endpoints for user authentication"
         },
@@ -1129,10 +1074,6 @@
         {
             "name": "Rentals",
             "description": "API Endpoints for rental management"
-        },
-        {
-            "name": "Payments",
-            "description": "API Endpoints for payment processing"
         }
     ]
 }

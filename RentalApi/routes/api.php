@@ -33,4 +33,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/payments/create-intent', [PaymentController::class, 'createPaymentIntent']);
     Route::post('/payments/confirm', [PaymentController::class, 'confirmPayment']);
    
+    
 });
