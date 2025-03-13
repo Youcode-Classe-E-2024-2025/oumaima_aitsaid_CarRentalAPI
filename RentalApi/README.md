@@ -1,80 +1,104 @@
 # Car Rental API
 
-A RESTful API for a car rental service built with Laravel.
+A robust REST API built with Laravel for managing car rentals, user authentication, and payments.
 
 ## Features
 
 - User authentication with Laravel Sanctum
-- CRUD operations for cars, rentals, and payments
-- Role-based access control
-- API documentation with Swagger
-- Comprehensive validation and error handling
+- Car management (CRUD operations)
+- Rental bookings and management
+- Payment processing with Stripe
+- API documentation with Swagger/OpenAPI
+- Request validation and error handling
+- Database migrations and seeders
 
 ## Requirements
 
 - PHP 8.1+
 - Composer
-- Postgres
+- MySQL/PostgreSQL
+- Stripe account for payments
 
 ## Installation
 
 1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/car-rental-api.git
-   cd car-rental-api
-   ```
+```bash
+git clone https://github.com/Youcode-Classe-E-2024-2025/oumaima_aitsaid_CarRentalAPI.git
+```
 
+```markdown:README.md
 2. Install dependencies:
-   ```
-   composer install
-   ```
+```bash
+composer install
+```
 
-3. Copy the .env.example file:
-   ```
-   cp .env.example .env
-   ```
+```markdown:README.md
+3. Configure environment:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-4. Configure your database in the .env file:
-   ```
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=car_rental
-   DB_USERNAME=root
-   DB_PASSWORD=
-   ```
-
-5. Generate application key:
-   ```
-   php artisan key:generate
-   ```
-
-6. Run migrations and seeders:
-   ```
-   php artisan migrate --seed
-   ```
-
-7. Generate Swagger documentation:
-   ```
-   php artisan l5-swagger:generate
-   ```
-
-8. Start the development server:
-   ```
-   php artisan serve
-   ```
+```markdown:README.md
+4. Set up database:
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
 ## API Documentation
 
-Access the API documentation at:
-```
-http://localhost:8000/api/documentation
-```
+Access the API documentation at `/api/documentation` after starting the server.
+
+### Main Endpoints
+
+- Authentication
+  - POST `/api/register`
+  - POST `/api/login`
+  - POST `/api/logout`
+
+- Cars
+  - GET `/api/cars`
+  - POST `/api/cars`
+  - GET `/api/cars/{id}`
+  - PUT `/api/cars/{id}`
+  - DELETE `/api/cars/{id}`
+
+- Rentals
+  - GET `/api/rentals`
+  - POST `/api/rentals`
+  - GET `/api/rentals/{id}`
+  - PUT `/api/rentals/{id}`
+
+- Payments
+  - POST `/api/payments/intent`
+  - POST `/api/payments/confirm`
 
 ## Testing
 
-Import the Postman collection from the `postman` directory to test the API endpoints.
+Run tests using PHPUnit:
+```bash
+php artisan test
+```
+
+## Security
+
+- Authentication using Laravel Sanctum
+- Input validation
+- CSRF protection
+- SQL injection prevention
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-This project is open-sourced software licensed under the MIT license.
+This project is licensed under the MIT License.
+```
+
+This README provides clear instructions for installation, available endpoints, testing procedures, and contribution guidelines. The documentation is professional and follows standard README conventions.
