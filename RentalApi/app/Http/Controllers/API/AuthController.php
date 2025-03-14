@@ -13,7 +13,7 @@ class AuthController extends Controller
 {
 /**
  * @OA\Post(
- *     path="/register",
+ *     path="/register",  
  *     summary="Register a new user",
  *     tags={"Authentication"},
  *     @OA\RequestBody(
@@ -105,7 +105,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user = Auth::user();  // This directly gets the authenticated user
+        $user = Auth::user();  
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
